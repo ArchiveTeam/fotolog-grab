@@ -37,7 +37,7 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
     profiles[string.match(url, "^https?://[^/]*fotolog%.com/([^/]+)")] = true
   end
 
-  if (downloaded[url] ~= true and addedtolist[url] ~= true) and (string.match(url, "^https?://[^/]*fotolog%.com") and string.match(url, item_value) or html == 0) and not (string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/twitter_register") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/login/%?redirect=") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/lang_switch") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/friend_add") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/share_overlay") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/report_overlay") or string.match(url, "^https?://[^/]*fotolog%.com/account/photos/edit") or string.match(url, "<a class=$")) then
+  if (downloaded[url] ~= true and addedtolist[url] ~= true) and (string.match(url, "^https?://[^/]*fotolog%.com") and string.match(url, item_value) or html == 0) and not (string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/twitter_register") or string.match(url, "%%20https?://[^/]*fotolog%.com[^/]*/") or string.match(url, "%s+https?://[^/]*fotolog%.com[^/]*/") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/login/%?redirect=") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/lang_switch") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/friend_add") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/share_overlay") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/report_overlay") or string.match(url, "^https?://[^/]*fotolog%.com/account/photos/edit") or string.match(url, "<a class=$")) then
     if string.match(url, "^https?://sp[0-9a-zA-Z]*%.fotolog%.com") and string.match(url, item_value) then
       addedtolist[url] = true
       return true
@@ -64,7 +64,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if string.match(url, "^https?://[^/]*fotolog%.com/[^/]+") and not string.match(url, "^https?://sp[0-9a-zA-Z]*%.fotolog%.com") then
       profiles[string.match(url, "^https?://[^/]*fotolog%.com/([^/]+)")] = true
     end
-    if (downloaded[url] ~= true and addedtolist[url] ~= true) and string.match(url, "^https?://[^/]*fotolog%.com") and string.match(url, item_value) and not (string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/twitter_register") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/login/%?redirect=") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/lang_switch") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/friend_add") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/share_overlay") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/report_overlay") or string.match(url, "^https?://[^/]*fotolog%.com/account/photos/edit") or string.match(url, "<a class=$")) then
+    if (downloaded[url] ~= true and addedtolist[url] ~= true) and string.match(url, "^https?://[^/]*fotolog%.com") and string.match(url, item_value) and not (string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/twitter_register") or string.match(url, "%%20https?://[^/]*fotolog%.com[^/]*/") or string.match(url, "%s+https?://[^/]*fotolog%.com[^/]*/") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/login/%?redirect=") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/lang_switch") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/friend_add") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/share_overlay") or string.match(url, "^https?://[^/]*fotolog%.com[^/]*/act/report_overlay") or string.match(url, "^https?://[^/]*fotolog%.com/account/photos/edit") or string.match(url, "<a class=$")) then
       if string.match(url, "&amp;") then
         table.insert(urls, { url=string.gsub(url, "&amp;", "&") })
         addedtolist[url] = true
@@ -139,6 +139,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   if status_code ~= 200 and status_code ~= 404 and url["url"] == "http://www.fotolog.com/"..item_value.."/" then
     return wget.actions.ABORT
+  end
+
+  if string.match(url["url"], "%%20https?://[^/]*fotolog%.com[^/]*/") or string.match(url["url"], "%s+https?://[^/]*fotolog%.com[^/]*/") then
+    return wget.actions.EXIT
   end
 
   if (status_code >= 200 and status_code <= 399) then
