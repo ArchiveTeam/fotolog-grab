@@ -58,7 +58,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20160304.01"
+VERSION = "20160304.02"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'fotolog'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -256,7 +256,7 @@ pipeline = Pipeline(
         id_function=stats_id_function,
     ),
     MoveFiles(),
-    ExternalProcess("rsync", ["rsync", "-avz", "--progress", ItemInterpolation("%(data_dir)s/%(warc_file_base)s_data.txt"), "rsync://archiveteam@69.30.218.174/fotologr/"]),
+    ExternalProcess("rsync", ["rsync", "-avz", "--progress", ItemInterpolation("%(data_dir)s/%(warc_file_base)s_data.txt"), "rsync://chips.fboyd.me/fotolog/"]),
     LimitConcurrent(NumberConfigValue(min=1, max=4, default="1",
         name="shared:rsync_threads", title="Rsync threads",
         description="The maximum number of concurrent uploads."),
