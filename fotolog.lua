@@ -161,8 +161,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     io.stdout:flush()
     os.execute("sleep 1")
     tries = tries + 1
-    if string.match(url["url"], profilepic) then
-      return wget.actions.EXIT
+    if profilepic ~= nil then
+      if string.match(url["url"], profilepic) then
+        return wget.actions.EXIT
+      end
     end
     if tries >= 5 then
       io.stdout:write("\nI give up...\n")
