@@ -9,6 +9,7 @@ local item_dir = os.getenv('item_dir')
 local warc_file_base = os.getenv('warc_file_base')
 
 local profilepic = nil
+local abortgrab = false
 
 local downloaded = {}
 local addedtolist = {}
@@ -118,6 +119,11 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     for newurl in string.gmatch(html, 'href="([^"]+)"') do
       checknewshorturl(newurl)
     end
+    if string.match(html, "Sorry,%s+Fotolog%s+is%s+over%s+capacity%.") or string.match(html, "Please%s+try%s+again%s+later,%s+in%s+the%s+meantime%s+why%s+don't%s+you%s+go%s+out%s+and%s+take%s+some%s+pictures%s*%?") or string.match(html, "erreur%-500") or string.match(html, "error_box") then
+      io.stdout:write("Fotolog is overloaded! ABORTING.\n")
+      io.stdout:flush()
+      abortgrab = true
+    end
   end
 
   return urls
@@ -138,6 +144,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   if status_code ~= 200 and status_code ~= 404 and url["url"] == "http://www.fotolog.com/"..item_value.."/" then
+    return wget.actions.ABORT
+  end
+
+  if abortgrab == true then
     return wget.actions.ABORT
   end
 
@@ -197,4 +207,13 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
     usersfile:write(url.."\n")
   end
   usersfile:close()
+end
+
+wget.callbacks.before_exit = function(exit_status, exit_status_string)
+  if abortgrab == true then
+    io.stdout:write("Fotolog is overloaded! ABORTING.\n")
+    io.stdout:flush()
+    return wget.exits.IO_FAIL
+  end
+  return exit_status
 end
